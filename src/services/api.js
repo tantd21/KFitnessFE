@@ -1,13 +1,40 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: 'http://your-api-endpoint.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
+
 export default {
+  getUsers() {
+    return apiClient.get('/users');
+  },
+  createUser(user) {
+    return apiClient.post('/users', user);
+  },
+  updateUser(user) {
+    return apiClient.put(`/users/${user.id}`, user);
+  },
+  deleteUser(id) {
+    return apiClient.delete(`/users/${id}`);
+  },
+
+  // Payments
+  getPayments() {
+    return apiClient.get('/payments');
+  },
+  createPayment(payment) {
+    return apiClient.post('/payments', payment);
+  },
+  updatePayment(payment) {
+    return apiClient.put(`/payments/${payment.id}`, payment);
+  },
+  deletePayment(id) {
+    return apiClient.delete(`/payments/${id}`);
+  },
   // Memberships
   getMemberships() {
     return apiClient.get('/memberships');

@@ -32,21 +32,28 @@
     <!-- Chế độ Grid -->
     <div v-if="viewMode === 'grid'" class="grid-container">
       <div v-for="user in users" :key="user.id" class="grid-item" @click="openModal(user)">
-        <img :src="user.avatar || 'https://via.placeholder.com/100'" alt="User Avatar" />
+        <img :src="user.avatar" alt="User Avatar" />
         <p>{{ user.name }}</p>
       </div>
     </div>
 
     <!-- Modal hiển thị thông tin user -->
-    <div v-if="selectedUser" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="selectedUser = null">&times;</span>
-        <img :src="selectedUser.avatar || 'https://via.placeholder.com/150'" alt="User Avatar" />
-        <h3>{{ selectedUser.name }}</h3>
-        <p>Email: {{ selectedUser.email }}</p>
-        <p>ID: {{ selectedUser.id }}</p>
-      </div>
+    <div v-if="selectedUser" class="modal" @click.self="selectedUser = null">
+  <div class="modal-content">
+    <span class="close" @click="selectedUser = null">&times;</span>
+    <img :src="selectedUser.avatar" alt="User Avatar" />
+    <h3>{{ selectedUser.name }}</h3>
+    <div class="modal-grid">
+      <p><strong>Email:</strong> {{ selectedUser.email }}</p>
+      <p><strong>SĐT:</strong> {{ selectedUser.phone }}</p>
+      <p><strong>Địa chỉ:</strong> {{ selectedUser.address }}</p>
+      <p><strong>CCCD:</strong> {{ selectedUser.cccd }}</p>
+      <p><strong>Ngày sinh:</strong> {{ selectedUser.dob }}</p>
+      <p><strong>Chiều cao:</strong> {{ selectedUser.height }} cm</p>
+      <p><strong>Cân nặng:</strong> {{ selectedUser.weight }} kg</p>
     </div>
+  </div>
+</div>
   </div>
 </template>
 
@@ -57,41 +64,28 @@ export default {
   name: 'UsersView',
   data() {
     return {
-      users: [   { id: 1, name: "Nguyễn Văn A", email: "a@example.com", avatar: "https://i.pravatar.cc/100?img=1" },
-      { id: 2, name: "Trần Thị B", email: "b@example.com", avatar: "https://i.pravatar.cc/100?img=2" },
-      { id: 3, name: "Lê Văn C", email: "c@example.com", avatar: "https://i.pravatar.cc/100?img=3" },
-      { id: 4, name: "Phạm Thị D", email: "d@example.com", avatar: "https://i.pravatar.cc/100?img=4" },
-      { id: 5, name: "Hoàng Văn E", email: "e@example.com", avatar: "https://i.pravatar.cc/100?img=5" },
-      { id: 6, name: "Đỗ Thị F", email: "f@example.com", avatar: "https://i.pravatar.cc/100?img=6" },
-      { id: 7, name: "Bùi Văn G", email: "g@example.com", avatar: "https://i.pravatar.cc/100?img=7" },
-      { id: 8, name: "Ngô Thị H", email: "h@example.com", avatar: "https://i.pravatar.cc/100?img=8" },
-      { id: 9, name: "Dương Văn I", email: "i@example.com", avatar: "https://i.pravatar.cc/100?img=9" },
-      { id: 10, name: "Vũ Thị J", email: "j@example.com", avatar: "https://i.pravatar.cc/100?img=10" },
-      { id: 11, name: "Phan Văn K", email: "k@example.com", avatar: "https://i.pravatar.cc/100?img=11" },
-      { id: 12, name: "Mai Thị L", email: "l@example.com", avatar: "https://i.pravatar.cc/100?img=12" },
-      { id: 13, name: "Lương Văn M", email: "m@example.com", avatar: "https://i.pravatar.cc/100?img=13" },
-      { id: 14, name: "Hà Thị N", email: "n@example.com", avatar: "https://i.pravatar.cc/100?img=14" },
-      { id: 15, name: "Tạ Văn O", email: "o@example.com", avatar: "https://i.pravatar.cc/100?img=15" },
-      { id: 16, name: "Chu Thị P", email: "p@example.com", avatar: "https://i.pravatar.cc/100?img=16" },
-      { id: 17, name: "Đinh Văn Q", email: "q@example.com", avatar: "https://i.pravatar.cc/100?img=17" },
-      { id: 18, name: "Thái Thị R", email: "r@example.com", avatar: "https://i.pravatar.cc/100?img=18" },
-      { id: 19, name: "Trịnh Văn S", email: "s@example.com", avatar: "https://i.pravatar.cc/100?img=19" },
-      { id: 20, name: "Cao Thị T", email: "t@example.com", avatar: "https://i.pravatar.cc/100?img=20" },
-   ],
+      users: Array.from({ length: 20 }, (_, i) => ({
+        id: i + 1,
+        name: `Người dùng ${i + 1}`,
+        email: `user${i + 1}@example.com`,
+        avatar: `https://i.pravatar.cc/100?img=${i + 1}`,
+        phone: `09${Math.floor(10000000 + Math.random() * 90000000)}`,
+        address: `Địa chỉ số ${i + 1}, Thành phố XYZ`,
+        cccd: `${Math.floor(100000000000 + Math.random() * 900000000000)}`,
+        dob: `199${Math.floor(Math.random() * 10)}-0${Math.floor(Math.random() * 9) + 1}-1${Math.floor(Math.random() * 9)}`,
+        height: Math.floor(150 + Math.random() * 50),
+        weight: Math.floor(40 + Math.random() * 60),
+      })),
       viewMode: 'list',
-      selectedUser: null, // Lưu user đang được chọn để hiển thị modal
+      selectedUser: null,
     };
-  },
-  async created() {
-    this.users = await api.getUsers();
   },
   methods: {
     editUser(user) {
       this.$router.push(`/users/edit/${user.id}`);
     },
-    async deleteUser(id) {
-      await api.deleteUser(id);
-      this.users = this.users.filter((user) => user.id !== id);
+    deleteUser(id) {
+      this.users = this.users.filter(user => user.id !== id);
     },
     openModal(user) {
       this.selectedUser = user;
@@ -130,7 +124,7 @@ th, td {
 /* Grid view */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
   padding: 1rem;
 }
@@ -167,29 +161,32 @@ th, td {
 }
 .modal-content {
   background: white;
-  padding: 20px;
+  padding: 30px;
   border-radius: 8px;
   text-align: center;
+  width: 400px;
   position: relative;
-  width: 300px;
 }
-.modal-content img {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  text-align: left;
 }
-.modal-content h3 {
-  margin: 10px 0;
-}
-.modal-content p {
-  margin: 5px 0;
-}
+
+/* Căn chỉnh nút đóng modal */
 .close {
   position: absolute;
   top: 10px;
-  right: 15px;
-  font-size: 24px;
+  right: 10px;
+  font-size: 20px;
+  font-weight: bold;
   cursor: pointer;
+  color: #333;
+  transition: color 0.3s;
 }
+.close:hover {
+  color: red;
+}
+
 </style>

@@ -1,9 +1,9 @@
 <template>
-  <div class="sidebar">   
+  <div class="sidebar">
     <h2>K-FITNESS</h2>
     <ul>
       <li>
-        <router-link to="/">
+        <router-link to="/" exact-active-class="active">
           <Home class="icon" />
           <span class="text">Dashboard</span>
         </router-link>
@@ -11,71 +11,45 @@
 
       <!-- Users Dropdown -->
       <li>
-        <a @click="toggleDropdown('users')" :class="{ active: dropdowns.users }">
+        <a @click="toggleDropdown('users')" :class="{ active: dropdowns.users || isActive('/users') }">
           <Users class="icon" />
           <span class="text">Users</span>
           <span class="arrow" :class="{ rotated: dropdowns.users }">&#9660;</span>
         </a>
         <ul :class="{ dropdown: true, open: dropdowns.users }">
-          <li><router-link to="/users/view">Xem</router-link></li>
-          <li><router-link to="/users/add">Thêm</router-link></li>
+          <li><router-link to="/users/view" active-class="sub-active">Xem</router-link></li>
+          <li><router-link to="/users/add" active-class="sub-active">Thêm</router-link></li>
         </ul>
       </li>
 
       <!-- Memberships Dropdown -->
       <li>
-        <a @click="toggleDropdown('memberships')" :class="{ active: dropdowns.memberships }">
+        <a @click="toggleDropdown('memberships')" :class="{ active: dropdowns.memberships || isActive('/memberships') }">
           <BadgePercent class="icon" />
           <span class="text">Memberships</span>
           <span class="arrow" :class="{ rotated: dropdowns.memberships }">&#9660;</span>
         </a>
         <ul :class="{ dropdown: true, open: dropdowns.memberships }">
-          <li><router-link to="/memberships/view">Xem</router-link></li>
-          <li><router-link to="/memberships/add">Thêm</router-link></li>
-        </ul>
-      </li>
-
-      <!-- Trainers Dropdown -->
-      <li>
-        <a @click="toggleDropdown('trainers')" :class="{ active: dropdowns.trainers }">
-          <ClipboardList class="icon" />
-          <span class="text">Trainers</span>
-          <span class="arrow" :class="{ rotated: dropdowns.trainers }">&#9660;</span>
-        </a>
-        <ul :class="{ dropdown: true, open: dropdowns.trainers }">
-          <li><router-link to="/trainers/view">Xem</router-link></li>
-          <li><router-link to="/trainers/add">Thêm</router-link></li>
-        </ul>
-      </li>
-
-      <!-- Workouts Dropdown -->
-      <li>
-        <a @click="toggleDropdown('workouts')" :class="{ active: dropdowns.workouts }">
-          <Dumbbell class="icon" />
-          <span class="text">Workouts</span>
-          <span class="arrow" :class="{ rotated: dropdowns.workouts }">&#9660;</span>
-        </a>
-        <ul :class="{ dropdown: true, open: dropdowns.workouts }">
-          <li><router-link to="/workouts/view">Xem</router-link></li>
-          <li><router-link to="/workouts/add">Thêm</router-link></li>
+          <li><router-link to="/memberships/view" active-class="sub-active">Xem</router-link></li>
+          <li><router-link to="/memberships/add" active-class="sub-active">Thêm</router-link></li>
         </ul>
       </li>
 
       <!-- Other Links -->
       <li>
-        <router-link to="/payments">
+        <router-link to="/payments" active-class="active">
           <Wallet class="icon" />
           <span class="text">Payments</span>
         </router-link>
       </li>
       <li>
-        <router-link to="/reports">
+        <router-link to="/reports" active-class="active">
           <FileText class="icon" />
           <span class="text">Reports</span>
         </router-link>
       </li>
       <li>
-        <router-link to="/settings">
+        <router-link to="/settings" active-class="active">
           <Settings class="icon" />
           <span class="text">Settings</span>
         </router-link>
@@ -85,7 +59,7 @@
 </template>
 
 <script>
-import { Home, Users, BadgePercent, Dumbbell, ClipboardList, Wallet, FileText, Settings } from 'lucide-vue-next';
+import { Home, Users, BadgePercent, Wallet, FileText, Settings } from 'lucide-vue-next';
 
 export default {
   name: 'Sidebar',
@@ -93,19 +67,15 @@ export default {
     Home,
     Users,
     BadgePercent,
-    Dumbbell,
-    ClipboardList,
     Wallet,
     FileText,
-    Settings
+    Settings,
   },
   data() {
     return {
       dropdowns: {
         users: false,
         memberships: false,
-        trainers: false,
-        workouts: false,
       },
     };
   },
@@ -113,22 +83,22 @@ export default {
     toggleDropdown(menu) {
       this.dropdowns[menu] = !this.dropdowns[menu];
     },
+    isActive(path) {
+      return this.$route.path.startsWith(path);
+    },
   },
 };
 </script>
 
 <style scoped>
+/* Sidebar Styles */
 .sidebar {
   width: 250px;
   background: #2c3e50;
   color: #fff;
-  height: 100vh; /* Giữ nguyên chiều cao 100vh */
+  height: 100vh;
   padding: 1rem;
-  overflow-y: auto; /* Cho phép cuộn */
-}
-
-.container {
-  display: flex; /* Nếu chưa có, thêm thuộc tính này */
+  overflow-y: auto;
 }
 
 .sidebar h2 {
@@ -139,95 +109,75 @@ export default {
 .sidebar ul {
   list-style: none;
   padding: 0;
-  padding-left: 0;
-
 }
 
 .sidebar ul li {
-  
   margin: 1rem 0;
-}
-.icon {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0; /* Giữ nguyên kích thước icon */
 }
 
 .sidebar ul li a {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Giữ mũi tên bên phải */
+  justify-content: space-between;
   padding: 0.5rem;
   color: #fff;
   text-decoration: none;
   cursor: pointer;
 }
 
-.sidebar ul li a .icon {
+/* Icon Styles */
+.icon {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
 }
 
 .sidebar ul li a .text {
-  margin-left: 30px; /* Giảm khoảng cách giữa icon và chữ */
-  flex-grow: 1; /* Đẩy chữ sát icon hơn và giữ mũi tên ở xa */
+  margin-left: 30px;
+  flex-grow: 1;
 }
 
 .sidebar ul li a .arrow {
   transition: transform 0.3s ease;
 }
 
+/* Hover Effect */
 .sidebar ul li a:hover {
   background-color: #34495e;
   transform: translateX(5px);
 }
 
+/* Khi menu mẹ mở, nhưng không đổi màu */
 .sidebar ul li a.active {
-  background-color: #34495e;
+  background-color: transparent; /* Giữ màu gốc */
+  color: #fff;
 }
 
-.sidebar ul li a .arrow {
-  transition: transform 0.3s ease;
-}
-
-.sidebar ul li a .arrow.rotated {
-  transform: rotate(180deg);
-}
-
-/* Loại bỏ border trái */
+/* Dropdown Styling */
 .dropdown {
   margin-left: 1rem;
-  padding-left: 0; /* Không cần padding để giữ layout */
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.5s ease, opacity 0.3s ease;
   opacity: 0;
 }
 
-/* Hiển thị menu dropdown khi mở */
 .dropdown.open {
   max-height: 200px;
   opacity: 1;
 }
 
-/* Định dạng lại mục con */
+/* Mũi tên cho Dropdown */
+.sidebar ul li a .arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Định dạng mục con */
 .dropdown li {
   margin: 0.5rem 0;
-  display: flex;
-  align-items: center;
 }
 
-/* Thêm icon mũi tên */
-.dropdown li::before {
-  content: "➤"; /* Mũi tên phải */
-  font-size: 12px;
-  margin-right: 8px;
-  color: #fff;
-  transition: transform 0.3s ease;
-}
-
-/* Hiệu ứng hover */
+/* Hiệu ứng hover mục con */
 .dropdown li a {
   padding: 0.5rem;
   display: block;
@@ -241,4 +191,12 @@ export default {
   transform: translateX(5px);
 }
 
+/* 🔥 Đổi màu khi mục con được chọn */
+.dropdown li a.sub-active {
+  background-color: #1abc9c; /* Màu nền khi chọn */
+  width: 100%;
+  display: block;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+}
 </style>
